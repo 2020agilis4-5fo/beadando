@@ -2,26 +2,39 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Imagehub.Core.Dto;
 using Microsoft.AspNetCore.Mvc;
+using Services.Interfaces;
 
 namespace ImagehubServer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class ImageController : ControllerBase
     {
+        private readonly IMapper _mapper;
+        private readonly IImageService _service;
+
+        public ImageController(IMapper mapper, IImageService service)
+        {
+            _mapper = mapper;
+            _service = service;
+        }
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public async Task<IEnumerable<ImageResponseDto>> Get()
         {
-            return new string[] { "value1", "value2" };
+            return (await _service.GetElementsAsync())
+                .Select(elem => _mapper.Map<ImageResponseDto>(elem));
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public async Task<ImageResponseDto> Get(int id)
         {
-            return "value";
+            var element = await _service.GetElementAsync(id);
+            return _mapper.Map<ImageResponseDto>(element);
         }
 
         // POST api/values
