@@ -1,0 +1,14 @@
+.container {
+  display: flex;
+  width: 70%;
+  margin: auto;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-top: 5%;
+}
+
+.box {
+  flex-basis: 25%;
+  align-self: center;
+  margin: 2%;
+}
