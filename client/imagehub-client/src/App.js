@@ -1,5 +1,5 @@
 import { createMuiTheme } from "@material-ui/core";
-import { blue, red } from "@material-ui/core/colors";
+import { red } from "@material-ui/core/colors";
 import React, { useState } from "react";
 import "./App.css";
 import Login from "./components/Login";

@@ -12,10 +12,11 @@ export default function MainContent() {
       <div>
         <MenuAppBar />
         <Switch>
-          <Route path="/feed" component={Feed} />
-          <Route path="/profile" component={Profile} />
-          <Route path="/upload" component={Upload} />
-          <Route path="/search" component={Search} />
+          <Route exact path="/" component={Feed} />
+          <Route exact path="/feed" component={Feed} />
+          <Route exact path="/profile" component={Profile} />
+          <Route exact path="/upload" component={Upload} />
+          <Route exact path="/search" component={Search} />
         </Switch>
       </div>
     </Router>
