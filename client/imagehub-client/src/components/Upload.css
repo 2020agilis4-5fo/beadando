@@ -1,0 +1,46 @@
+.container--upload {
+
+  display: flex;
+  width: 70%;
+  margin: auto;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-top: 5%;
+}
+.upload-box {
+  width: 50%;
+  border: 1px solid #dbdbdb;
+}
+
+.upload__wrapper {
+  min-width: 350px;
+  min-height: 550px;
+  max-width: 700px;
+  max-height: 700px;
+  width: 100%;
+  display: flex;
+  border: 1px solid #dbdbdb;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-placeholder {
+  width: 355px;
+  margin: 10% auto 2%;
+  height: 200;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+}
+
+.upload__wrapper .button--upload-photo {
+  position: absolute;
+  bottom: 10%;
+}
+
+.img{
+    width: 355px;
+    height: 200px;
+}

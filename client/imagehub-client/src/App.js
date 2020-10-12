@@ -1,24 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { createMuiTheme } from "@material-ui/core";
+import { red } from "@material-ui/core/colors";
+import React, { useState } from "react";
+import "./App.css";
+import Login from "./components/Login";
+import MainContent from "./components/MainContent";
+import { ThemeProvider } from "@material-ui/core/styles";
 
 function App() {
+  let  [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  const theme = createMuiTheme({
+    palette: {
+      primary: red,
+    },
+  });
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <ThemeProvider theme={theme}>
+        {!isLoggedIn && <Login setIsLoggedIn={setIsLoggedIn}  />}
+        {isLoggedIn && <MainContent />}
+      </ThemeProvider>
     </div>
   );
 }
