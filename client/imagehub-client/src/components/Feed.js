@@ -11,12 +11,12 @@ export default function Feed() {
         {
           <FeedItem
             name={"User" + i}
-            img={require("../assets/img_placeholder.svg")}
+            img={"https://picsum.photos/id/"+(i+Math.floor(Math.random() * 30))+"/355/200"}
           />
         }
       </div>
     );
   }
 
-  return <div className="container">{content}</div>;
+  return <div className="container--feed">{content}</div>;
 }
