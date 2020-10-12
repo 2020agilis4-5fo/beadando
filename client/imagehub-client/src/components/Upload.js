@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import "./Upload.css";
-import Button from "@material-ui/core/Button";
-import { makeStyles } from "@material-ui/core/styles";
 import UploadImageButton from "./UploadImageButton";
 import ImageSelector from "./ImageSelector";
 
