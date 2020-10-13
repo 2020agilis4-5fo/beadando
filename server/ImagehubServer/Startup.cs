@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Data;
 using Imagehub.Core.Mappings;
+using Imagehub.Core.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -58,6 +59,8 @@ namespace ImagehubServer
             {
                 app.UseHsts();
             }
+
+            app.ConfigureExceptionHandler();
 
             app.UseRouting();
             app.UseCors("img");
