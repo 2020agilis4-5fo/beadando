@@ -1,22 +1,48 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import FeedItem from "./FeedItem";
 import "./Feed.css";
+import axios from "axios";
 
-export default function Feed() {
+function GenerateFeedItems(data) {
   let content = [];
-
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < data.length; i++) {
     content.push(
       <div key={i} className="box">
         {
           <FeedItem
-            name={"User" + i}
-            img={"https://picsum.photos/id/"+(i+Math.floor(Math.random() * 30))+"/355/200"}
+            name={data[i].name}
+            img={`data:image/png;base64,${data[i].base64EncodedImage}`}
           />
         }
       </div>
     );
   }
+  return content;
+}
 
-  return <div className="container--feed">{content}</div>;
+export default function Feed() {
+  let [data, setData] = useState([]);
+  let [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await axios("https://localhost:44380/api/image");
+
+        setData(result.data);
+        setIsLoaded(true);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  return (
+    <div className="container--feed">
+      {isLoaded && GenerateFeedItems(data)}
+      {!isLoaded && "nincs szerver"}
+    </div>
+  );
 }
