@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import FeedItem from "./FeedItem";
 import "./Feed.css";
 import axios from "axios";
+import { CircularProgress } from "@material-ui/core";
 
 function GenerateFeedItems(data) {
   let content = [];
@@ -42,7 +43,7 @@ export default function Feed() {
   return (
     <div className="container--feed">
       {isLoaded && GenerateFeedItems(data)}
-      {!isLoaded && "nincs szerver"}
+      {!isLoaded && <CircularProgress />}
     </div>
   );
 }
