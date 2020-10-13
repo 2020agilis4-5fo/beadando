@@ -40,6 +40,7 @@ namespace ImagehubServer.Controllers
         [HttpPost]
         public void Post([FromBody] string value)
         {
+            // todo: add saving options
         }
 
         // PUT api/values/5
