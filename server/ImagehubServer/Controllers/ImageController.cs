@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data;
 using Imagehub.Core.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
@@ -38,15 +39,17 @@ namespace ImagehubServer.Controllers
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task Post([FromBody] ImageUploadDto dto)
         {
-            // todo: add saving options
+            var imageEntity = _mapper.Map<ImagehubImage>(dto);
+            await _service.CreateAsync(imageEntity);
         }
 
         // PUT api/values/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
+
         }
 
         // DELETE api/values/5
