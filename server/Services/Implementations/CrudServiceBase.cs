@@ -17,9 +17,9 @@ namespace Services.Implementations
 
         protected ICrudRepository<T> _repo;
 
-        public Task CreateAsync(T newEntry)
+        public async Task CreateAsync(T newEntry)
         {
-            throw new NotImplementedException();
+            await _repo.CreateAsync(newEntry);
         }
 
         public Task UpdateAsync(T updatee)

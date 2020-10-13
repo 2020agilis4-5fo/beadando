@@ -17,9 +17,9 @@ namespace Repository.Implementations
             var basePath = Directory.GetParent(Environment.CurrentDirectory).FullName;
             _imageFodlerPath = Path.Combine(Path.Combine(basePath, "Repository"), "TempImages");
         }
-        public Task CreateAsync(ImagehubImage newEntry)
+        public async Task CreateAsync(ImagehubImage newEntry)
         {
-            throw new NotImplementedException();
+            this.SaveimageFromBase64Encoded(newEntry.Base64EncodedImage, newEntry.FileName);
         }
 
         public Task DeleteAsync(ImagehubImage deletee)
@@ -58,6 +58,13 @@ namespace Repository.Implementations
         {
             var imgBytes = File.ReadAllBytes(path);
             return Convert.ToBase64String(imgBytes);
+        }
+
+        private void SaveimageFromBase64Encoded(string base64Encoded, string fileName)
+        {
+            // based on https://stackoverflow.com/questions/5400173/converting-a-base-64-string-to-an-image-and-saving-it
+            var imagePath = Path.Combine(_imageFodlerPath, fileName);
+            File.WriteAllBytes(imagePath, Convert.FromBase64String(base64Encoded));
         }
     }
 }
