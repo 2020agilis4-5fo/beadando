@@ -6,7 +6,8 @@ import MenuAppBar from "./MenuAppBar.js";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Search from "./Search";
 
-export default function MainContent() {
+export default function MainContent(props) {
+  let data = props.userData;
   return (
     <Router>
       <div>
@@ -14,7 +15,7 @@ export default function MainContent() {
         <Switch>
           <Route exact path="/" component={Feed} />
           <Route exact path="/feed" component={Feed} />
-          <Route exact path="/profile" component={Profile} />
+          <Route exact path="/profile" render={(props) => <Profile {...props} userData={data}/>} />
           <Route exact path="/upload" component={Upload} />
           <Route exact path="/search" component={Search} />
         </Switch>

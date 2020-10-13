@@ -15,7 +15,7 @@ export default function Login(props) {
               Üdvözlünk az ImageHub oldalán! A továbblépéshez használd a
               facebookodat!
             </p>
-            <Facebook setIsLoggedIn={props.setIsLoggedIn} />
+            <Facebook setIsLoggedIn={props.setIsLoggedIn} setUserData={props.setUserData} />
           </CardContent>
         </div>
       </Card>
