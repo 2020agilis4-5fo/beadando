@@ -33,6 +33,18 @@ namespace ImagehubServer
 
             // services --> scoped lifecycle to avoid scoped-sigleton trap
             services.AddScoped<IImageService, ImageService>();
+
+            services.AddCors(c =>
+            {
+                c.AddPolicy("img", options => {
+                    //options.WithOrigins("[SOME ORIGIN LATER]");
+                    options
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,7 +60,7 @@ namespace ImagehubServer
             }
 
             app.UseRouting();
-
+            app.UseCors("img");
             app.UseEndpoints(endpts =>
             {
                 endpts.MapControllers();
