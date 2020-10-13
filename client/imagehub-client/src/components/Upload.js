@@ -10,8 +10,18 @@ export default function Upload() {
   return (
     <div className="container--upload">
       <div className="upload__wrapper">
-        <ImageSelector image={image} setImage={setImage} setSelected={setSelected}/>
-        {selected && <UploadImageButton image={image} />}
+        <ImageSelector
+          image={image}
+          setImage={setImage}
+          setSelected={setSelected}
+        />
+        {selected && (
+          <UploadImageButton
+            setSelected={setSelected}
+            setImage={setImage}
+            image={image}
+          />
+        )}
       </div>
     </div>
   );
