@@ -1,0 +1,8 @@
+.container--profile {
+    width: 70%;
+    margin: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 2%;
+    padding-bottom: 5%;
+  }

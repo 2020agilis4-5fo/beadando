@@ -15,7 +15,7 @@ export default function Facebook(props) {
         <FacebookLogin
     appId="2122090571268724"
     autoLoad={true}
-    fields="name"
+    fields="name,email"
     onClick={componentClicked}
     callback={responseFacebook} />
     )
