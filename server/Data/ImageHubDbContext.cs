@@ -20,6 +20,6 @@ namespace Data
             this.Database.EnsureCreated();
         }
 
-        
+                
     }
 }

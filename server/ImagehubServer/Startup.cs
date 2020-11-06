@@ -36,16 +36,23 @@ namespace ImagehubServer
                 options.UseSqlServer("[CONN]");
             }, ServiceLifetime.Scoped);
 
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+            });
+
 
             services.AddControllers();
 
             services.AddAutoMapper(typeof(ImageHubProfile));
 
             // repos --> scoped lifecycle for db access
-            services.AddScoped<ICrudRepository<ImagehubImage>, FakeImageRepository>();
+            services.AddScoped<ICrudRepository<ImagehubImage>, ImageRepository>();
 
             // services --> scoped lifecycle to avoid scoped-sigleton trap
             services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IAuthService, IdentityAuthService>();
 
             services.AddCors(c =>
             {
@@ -80,6 +87,8 @@ namespace ImagehubServer
             {
                 endpts.MapControllers();
             });
+
+
         }
     }
 }

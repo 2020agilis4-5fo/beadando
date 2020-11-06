@@ -11,7 +11,10 @@ namespace Data.Models
         [Required]
         public string Base64EncodedImage { get; set; }
 
-        [ForeignKey(nameof(ImageHubUser))]
+        
         public ImageHubUser Owner { get; set; }
+
+        [ForeignKey(nameof(ImageHubUser))]
+        public int OwnerId { get; set; }
     }
 }

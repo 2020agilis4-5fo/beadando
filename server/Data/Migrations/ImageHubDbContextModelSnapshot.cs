@@ -101,12 +101,12 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ImageHubUser")
+                    b.Property<int>("OwnerId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ImageHubUser");
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Images");
                 });
@@ -248,7 +248,9 @@ namespace Data.Migrations
                 {
                     b.HasOne("Data.Models.ImageHubUser", "Owner")
                         .WithMany()
-                        .HasForeignKey("ImageHubUser");
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

@@ -22,9 +22,9 @@ namespace Services.Implementations
             await _repo.CreateAsync(newEntry);
         }
 
-        public Task UpdateAsync(T updatee)
+        public async Task UpdateAsync(T updatee)
         {
-            throw new NotImplementedException();
+            await _repo.UpdateAsync(updatee);
         }
 
         public async Task<T> GetElementAsync(int id)
@@ -37,9 +37,9 @@ namespace Services.Implementations
             return await _repo.GetElementsAsync();
         }
 
-        public Task DeleteAsync(T deletee)
+        public async Task DeleteAsync(T deletee)
         {
-            throw new NotImplementedException();
+            await _repo.DeleteAsync(deletee);
         }
     }
 }

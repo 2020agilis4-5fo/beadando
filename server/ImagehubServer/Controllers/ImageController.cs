@@ -6,6 +6,7 @@ using AutoMapper;
 using Data;
 using Data.Models;
 using Imagehub.Core.Dto;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 
@@ -13,6 +14,7 @@ namespace ImagehubServer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("img")]
     public class ImageController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -41,23 +43,47 @@ namespace ImagehubServer.Controllers
 
         // POST api/values
         [HttpPost]
-        public async Task Post([FromBody] ImageUploadDto dto)
+        public async Task<ActionResult> Post([FromBody] ImageUploadDto dto)
         {
             var imageEntity = _mapper.Map<ImagehubImage>(dto);
+
             await _service.CreateAsync(imageEntity);
+
+            return Accepted(new
+            {
+                imageEntity.FileName,
+                imageEntity.Id,
+                imageEntity.OwnerId
+            });
         }
 
         // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut]
+        public async Task<ActionResult> Put([FromBody] ImageDto imageDto)
         {
-
+            // todo: check ownership?
+            var imageEntity = _mapper.Map<ImagehubImage>(imageDto);
+            await _service.UpdateAsync(imageEntity);
+            return Ok(new ImageResponseDto()
+            {
+                Name = imageEntity.FileName
+            });
         }
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
+            var imageInDb = await _service.GetElementAsync(id);
+            if(imageInDb == null)
+            {
+                return NotFound(id);
+            }
+            else
+            {
+                await _service.DeleteAsync(imageInDb);
+                return Ok(id);
+            }
         }
     }
 }

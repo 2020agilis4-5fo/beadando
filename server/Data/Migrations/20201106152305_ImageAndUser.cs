@@ -163,17 +163,17 @@ namespace Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FileName = table.Column<string>(nullable: false),
                     Base64EncodedImage = table.Column<string>(nullable: false),
-                    ImageHubUser = table.Column<int>(nullable: true)
+                    OwnerId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Images", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Images_AspNetUsers_ImageHubUser",
-                        column: x => x.ImageHubUser,
+                        name: "FK_Images_AspNetUsers_OwnerId",
+                        column: x => x.OwnerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -216,9 +216,9 @@ namespace Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Images_ImageHubUser",
+                name: "IX_Images_OwnerId",
                 table: "Images",
-                column: "ImageHubUser");
+                column: "OwnerId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
