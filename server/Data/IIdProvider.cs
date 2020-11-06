@@ -8,6 +8,6 @@
         /// <summary>
         /// The ID of the entity.
         /// </summary>
-        int Id { get; }
+        int Id { get; set; }
     }
 }

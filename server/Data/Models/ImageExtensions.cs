@@ -1,8 +1,8 @@
 ﻿
-namespace Data
+namespace Data.Models
 {
     public partial class ImagehubImage : IIdProvider
     {
-        public int Id { get; }
+        public int Id { get; set; }
     }
 }

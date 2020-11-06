@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data;
+using Data.Models;
 using Imagehub.Core.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;

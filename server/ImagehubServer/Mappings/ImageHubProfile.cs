@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Data;
+using Data.Models;
 using Imagehub.Core.Dto;
 
 namespace Imagehub.Core.Mappings
@@ -16,8 +17,7 @@ namespace Imagehub.Core.Mappings
             CreateMap<ImagehubImage, ImageUploadDto>()
                 .ForMember(dest => dest.Base64EncodedImage, m => m.MapFrom(src => src.Base64EncodedImage))
                 .ForMember(dest => dest.ImageNameWithExtension, m => m.MapFrom(src => src.FileName))
-                .ReverseMap();
-                
+                .ReverseMap();                
         }
     }
 }

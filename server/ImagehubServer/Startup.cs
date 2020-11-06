@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using Data;
+using Data.Models;
 using Imagehub.Core.Mappings;
 using Imagehub.Core.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Repository.Implementations;
@@ -25,6 +28,15 @@ namespace ImagehubServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddIdentity<ImageHubUser, UserRole>()
+                .AddEntityFrameworkStores<ImageHubDbContext>();
+
+            services.AddDbContext<ImageHubDbContext>(options =>
+            {
+                options.UseSqlServer("[CONN]");
+            }, ServiceLifetime.Scoped);
+
+
             services.AddControllers();
 
             services.AddAutoMapper(typeof(ImageHubProfile));
