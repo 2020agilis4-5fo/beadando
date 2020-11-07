@@ -19,6 +19,50 @@ namespace Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("Data.Models.Friend", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("LeftId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RightId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LeftId");
+
+                    b.HasIndex("RightId");
+
+                    b.ToTable("Friends");
+                });
+
+            modelBuilder.Entity("Data.Models.FriendRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("FromId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ToId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromId");
+
+                    b.HasIndex("ToId");
+
+                    b.ToTable("FriendRequests");
+                });
+
             modelBuilder.Entity("Data.Models.ImageHubUser", b =>
                 {
                     b.Property<int>("Id")
@@ -242,6 +286,36 @@ namespace Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("Data.Models.Friend", b =>
+                {
+                    b.HasOne("Data.Models.ImageHubUser", "Left")
+                        .WithMany("FriendshipsInitiatedList")
+                        .HasForeignKey("LeftId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Data.Models.ImageHubUser", "Right")
+                        .WithMany("FriendshipsReceivedList")
+                        .HasForeignKey("RightId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Data.Models.FriendRequest", b =>
+                {
+                    b.HasOne("Data.Models.ImageHubUser", "From")
+                        .WithMany("RequestsReceived")
+                        .HasForeignKey("FromId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Data.Models.ImageHubUser", "To")
+                        .WithMany("RequestsSent")
+                        .HasForeignKey("ToId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Data.Models.ImagehubImage", b =>

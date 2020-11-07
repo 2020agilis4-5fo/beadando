@@ -1,9 +1,11 @@
 ﻿using Data.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,11 +15,15 @@ namespace Services.Implementations
     {
         private readonly UserManager<ImageHubUser> _userManager;
         private readonly SignInManager<ImageHubUser> _signInManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public IdentityAuthService(UserManager<ImageHubUser> userManager, SignInManager<ImageHubUser> signInManager)
+        public IdentityAuthService(UserManager<ImageHubUser> userManager,
+            SignInManager<ImageHubUser> signInManager,
+            IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<AuthResult<int>> AttemptLoginAsync(LoginDto login)
@@ -83,6 +89,24 @@ namespace Services.Implementations
                 Successful = true,
                 UserId = user.Id
             };
+        }
+
+        public bool CheckIfUserExists(int userId)
+        {
+            return _userManager.Users.FirstOrDefault(u => u.Id == userId) != null;
+        }
+
+        public bool CheckIfUserIsAuthorized(int idClaim)
+        {
+            int loggedInId = this.GetLoggedinUserId();
+            return loggedInId != 0 && loggedInId == idClaim;
+        }
+
+        public int GetLoggedinUserId()
+        {
+            int id;
+            int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out id);
+            return id;
         }
     }
 }

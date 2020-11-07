@@ -13,6 +13,7 @@ using Repository.Implementations;
 using Repository.Interfaces;
 using Services.Implementations;
 using Services.Interfaces;
+using System;
 
 namespace ImagehubServer
 {
@@ -42,17 +43,56 @@ namespace ImagehubServer
                 options.Password.RequireNonAlphanumeric = false;
             });
 
-
+            services.AddHttpContextAccessor();
             services.AddControllers();
 
             services.AddAutoMapper(typeof(ImageHubProfile));
 
             // repos --> scoped lifecycle for db access
             services.AddScoped<ICrudRepository<ImagehubImage>, ImageRepository>();
+            services.AddScoped<ICrudRepository<Friend>, FriendRepository>();
+            services.AddScoped<ICrudRepository<FriendRequest>, FriendRequestRepository>();
 
-            // services --> scoped lifecycle to avoid scoped-sigleton trap
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IAuthService, IdentityAuthService>();
+            services.AddScoped<IFriendService, FriendService>();
+
+            services.AddAuthentication(opts =>
+            {
+                // identity authentication options
+                opts.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
+                opts.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
+                opts.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+            });
+
+            // identity authentication config
+            //based on: https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-3.1&tabs=visual-studio
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings.
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+
+                // Lockout settings.
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+
+                // User settings.
+                options.User.AllowedUserNameCharacters =
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = false;
+            });
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                // Cookie settings
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+
+                options.LoginPath = "/Account/Login";
+                options.SlidingExpiration = true;
+            });
 
             services.AddCors(c =>
             {
@@ -80,15 +120,18 @@ namespace ImagehubServer
             }
 
             app.ConfigureExceptionHandler();
-
+            app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseRouting();
+
             app.UseCors("img");
+
+            app.UseAuthorization();
+
             app.UseEndpoints(endpts =>
             {
                 endpts.MapControllers();
             });
-
-
         }
     }
 }

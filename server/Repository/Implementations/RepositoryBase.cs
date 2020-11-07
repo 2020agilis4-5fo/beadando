@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Repository.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Repository.Implementations
@@ -23,11 +24,6 @@ namespace Repository.Implementations
 
         public async Task CreateAsync(T newEntry)
         {
-            if (await EntryFinderAsync(newEntry.Id) != null)
-            {
-                throw new ApplicationException($"The element with the same ID is already in the database");
-            }
-
             await _context.Set<T>().AddAsync(newEntry);
             await _context.SaveChangesAsync();
         }
@@ -51,9 +47,9 @@ namespace Repository.Implementations
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public async Task<IEnumerable<T>> GetElementsAsync()
+        public IQueryable<T> GetElementsAsync()
         {
-            return await _context.Set<T>().ToListAsync();
+            return _context.Set<T>().AsQueryable();
         }
 
         public async Task UpdateAsync(T updatee)

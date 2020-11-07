@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Data.Migrations
 {
-    public partial class ImageAndUser : Migration
+    public partial class Friend : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -156,6 +156,54 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "FriendRequests",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FromId = table.Column<int>(nullable: false),
+                    ToId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FriendRequests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FriendRequests_AspNetUsers_FromId",
+                        column: x => x.FromId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_FriendRequests_AspNetUsers_ToId",
+                        column: x => x.ToId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Friends",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    LeftId = table.Column<int>(nullable: false),
+                    RightId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Friends", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Friends_AspNetUsers_LeftId",
+                        column: x => x.LeftId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Friends_AspNetUsers_RightId",
+                        column: x => x.RightId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Images",
                 columns: table => new
                 {
@@ -216,6 +264,26 @@ namespace Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_FriendRequests_FromId",
+                table: "FriendRequests",
+                column: "FromId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FriendRequests_ToId",
+                table: "FriendRequests",
+                column: "ToId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Friends_LeftId",
+                table: "Friends",
+                column: "LeftId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Friends_RightId",
+                table: "Friends",
+                column: "RightId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Images_OwnerId",
                 table: "Images",
                 column: "OwnerId");
@@ -237,6 +305,12 @@ namespace Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "FriendRequests");
+
+            migrationBuilder.DropTable(
+                name: "Friends");
 
             migrationBuilder.DropTable(
                 name: "Images");

@@ -1,4 +1,5 @@
-﻿using Services.Implementations;
+﻿using Data.Models;
+using Services.Implementations;
 using System;
 using System.Threading.Tasks;
 
@@ -11,5 +12,11 @@ namespace Services.Interfaces
         Task<AuthResult<int>> AttemptLoginAsync(LoginDto login);
 
         Task<AuthResult<int>> AttemptLogoutAsync();
+
+        bool CheckIfUserExists(int userId);
+
+        int GetLoggedinUserId();
+
+        bool CheckIfUserIsAuthorized(int idClaim);
     }
 }

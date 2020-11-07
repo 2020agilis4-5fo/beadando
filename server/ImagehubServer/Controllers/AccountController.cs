@@ -14,6 +14,7 @@ namespace Imagehub.Core.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors("img")]
+    [Authorize]
     public class AccountController: ControllerBase
     {
 
@@ -25,6 +26,7 @@ namespace Imagehub.Core.Controllers
         }
 
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] LoginDto registerObj)
         {
             if (ModelState.IsValid)
@@ -44,6 +46,7 @@ namespace Imagehub.Core.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginDto loginObject)
         {
             if (ModelState.IsValid)
@@ -51,10 +54,10 @@ namespace Imagehub.Core.Controllers
                 var result = await _authService.AttemptLoginAsync(loginObject);
                 if (result.Successful)
                 {
-                    return Ok(loginObject.Username);
+                    return Ok(result.UserId);
                 }
 
-                return Unauthorized();
+                return Unauthorized("Incorrect username or password");
             }
             return BadRequest(ModelState);
         }
