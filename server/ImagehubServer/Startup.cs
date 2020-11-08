@@ -34,7 +34,7 @@ namespace ImagehubServer
 
             services.AddDbContext<ImageHubDbContext>(options =>
             {
-                options.UseSqlServer("");
+                options.UseSqlServer("[CONN]");
             }, ServiceLifetime.Scoped);
 
             services.Configure<IdentityOptions>(options =>
@@ -97,9 +97,8 @@ namespace ImagehubServer
             services.AddCors(c =>
             {
                 c.AddPolicy("img", options => {
-                    //options.WithOrigins("[SOME ORIGIN LATER]");
                     options
-                        .AllowAnyOrigin()
+                        .WithOrigins("localhost")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials();
