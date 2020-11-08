@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Services.Interfaces
 {
@@ -36,7 +37,7 @@ namespace Services.Interfaces
         /// </summary>
         /// <param name="ownerId">The ID of the corresponding user.</param>
         /// <returns>A <see cref="Task"> representing the async operation with the elements wrapped if found, empty enumerable otherwise.</returns>
-        Task<IEnumerable<T>> GetElementsAsync();
+        IQueryable<T> GetElementsAsync();
 
         /// <summary>
         /// Deletes the entity asynchronously.

@@ -5,10 +5,14 @@ using System.Threading.Tasks;
 
 namespace Imagehub.Core.Dto
 {
-    public class ImageUploadDto
+    public class ImageDto
     {
+        public int ImageId { get; set; }
+
+        public string FileName { get; set; }
+
         public string Base64EncodedImage { get; set; }
-        public string ImageNameWithExtension { get; set; }
-        public int OwnerId { get; set; }
+
+        public int ImageOwnerId { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Data;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Repository.Interfaces
@@ -37,7 +38,7 @@ namespace Repository.Interfaces
         /// </summary>
         /// <param name="ownerId">The ID of the corresponding user.</param>
         /// <returns>A <see cref="Task"> representing the async operation with the elements wrapped if found, empty enumerable otherwise.</returns>
-        Task<IEnumerable<T>> GetElementsAsync();
+        IQueryable<T> GetElementsAsync();
 
         /// <summary>
         /// Deletes the entity asynchronously.

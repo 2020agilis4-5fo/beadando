@@ -3,6 +3,7 @@ using Repository.Interfaces;
 using Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Services.Implementations
@@ -22,9 +23,9 @@ namespace Services.Implementations
             await _repo.CreateAsync(newEntry);
         }
 
-        public Task UpdateAsync(T updatee)
+        public async Task UpdateAsync(T updatee)
         {
-            throw new NotImplementedException();
+            await _repo.UpdateAsync(updatee);
         }
 
         public async Task<T> GetElementAsync(int id)
@@ -32,14 +33,14 @@ namespace Services.Implementations
             return await _repo.GetElementAsync(id);
         }
 
-        public async Task<IEnumerable<T>> GetElementsAsync()
+        public IQueryable<T> GetElementsAsync()
         {
-            return await _repo.GetElementsAsync();
+            return _repo.GetElementsAsync();
         }
 
-        public Task DeleteAsync(T deletee)
+        public async Task DeleteAsync(T deletee)
         {
-            throw new NotImplementedException();
+            await _repo.DeleteAsync(deletee);
         }
     }
 }
