@@ -34,7 +34,7 @@ namespace ImagehubServer
 
             services.AddDbContext<ImageHubDbContext>(options =>
             {
-                options.UseSqlServer("[CONN]");
+                options.UseSqlServer("");
             }, ServiceLifetime.Scoped);
 
             services.Configure<IdentityOptions>(options =>
@@ -101,7 +101,8 @@ namespace ImagehubServer
                     options
                         .AllowAnyOrigin()
                         .AllowAnyMethod()
-                        .AllowAnyHeader();
+                        .AllowAnyHeader()
+                        .AllowCredentials();
                 });
             });
 
