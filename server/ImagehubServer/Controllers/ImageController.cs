@@ -33,8 +33,8 @@ namespace ImagehubServer.Controllers
             _authService = authService;
         }
         // GET api/values/
-        [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<ImageResponseDto>>> Get(int id, [FromBody] UserDto dto)
+        [HttpPost("{id}")]
+        public async Task<ActionResult<IEnumerable<ImageResponseDto>>> GetImage(int id, [FromBody] UserDto dto)
         {
 
             if (!_authService.CheckIfUserIsAuthorized(dto.Id))
@@ -80,8 +80,8 @@ namespace ImagehubServer.Controllers
         }
 
         // GET api/values
-        [HttpGet]
-        public async Task<ActionResult<ImageResponseDto>> Get([FromBody] UserDto dto)
+        [HttpPost]
+        public async Task<ActionResult<ImageResponseDto>> GetImages([FromBody] UserDto dto)
         {
             if (!_authService.CheckIfUserIsAuthorized(dto.Id))
             {
@@ -95,7 +95,7 @@ namespace ImagehubServer.Controllers
         }
 
         // POST api/values
-        [HttpPost]
+        [HttpPost("new")]
         public async Task<ActionResult> Post([FromBody] ImageUploadDto dto)
         {
             if (!_authService.CheckIfUserIsAuthorized(dto.OwnerId))
