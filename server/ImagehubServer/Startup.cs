@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Repository.Implementations;
 using Repository.Interfaces;
 using Services.Implementations;
@@ -34,7 +35,7 @@ namespace ImagehubServer
 
             services.AddDbContext<ImageHubDbContext>(options =>
             {
-                options.UseSqlServer("[CONN]");
+                options.UseSqlServer("Server=tcp:dbdev45.database.windows.net,1433;Initial Catalog=45dev;Persist Security Info=False;User ID=ddani;Password=Asdasd123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"); // TODO
             }, ServiceLifetime.Scoped);
 
             services.Configure<IdentityOptions>(options =>
@@ -98,7 +99,7 @@ namespace ImagehubServer
             {
                 c.AddPolicy("img", options => {
                     options
-                        .WithOrigins("localhost")
+                        .WithOrigins("https://beadandoagilis45.azurewebsites.net:3000") // TODO
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials();
@@ -108,7 +109,7 @@ namespace ImagehubServer
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
