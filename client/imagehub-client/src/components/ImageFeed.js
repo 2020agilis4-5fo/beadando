@@ -4,6 +4,7 @@ import "./Feed.css";
 
 export default function ImageFeed(props) {
   let data = props.data;
+  if (data == null) data = []
   let content = [];
   for (let i = 0; i < data.length; i++) {
     content.push(
