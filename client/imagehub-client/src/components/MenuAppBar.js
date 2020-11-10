@@ -9,6 +9,8 @@ import PublishIcon from "@material-ui/icons/Publish";
 import SearchIcon from "@material-ui/icons/Search";
 import AppsIcon from "@material-ui/icons/Apps";
 import { Link } from "react-router-dom";
+import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
+import GroupIcon from '@material-ui/icons/Group';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -42,6 +44,16 @@ export default function MenuAppBar() {
             <IconButton>
               <Link to="/profile" className={classes.link}>
                 <AccountCircle />
+              </Link>
+            </IconButton>
+            <IconButton>
+              <Link to="/requests" className={classes.link}>
+                <EmojiPeopleIcon />
+              </Link>
+            </IconButton>
+            <IconButton>
+              <Link to="/friends" className={classes.link}>
+                <GroupIcon />
               </Link>
             </IconButton>
             <IconButton>

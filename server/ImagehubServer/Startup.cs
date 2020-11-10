@@ -97,11 +97,11 @@ namespace ImagehubServer
             services.AddCors(c =>
             {
                 c.AddPolicy("img", options => {
-                    //options.WithOrigins("[SOME ORIGIN LATER]");
                     options
-                        .AllowAnyOrigin()
+                        .WithOrigins("localhost")
                         .AllowAnyMethod()
-                        .AllowAnyHeader();
+                        .AllowAnyHeader()
+                        .AllowCredentials();
                 });
             });
 

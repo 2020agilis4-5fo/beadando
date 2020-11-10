@@ -1,12 +1,16 @@
 ﻿
 
 using Data.Models;
+using Imagehub.Core.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Services.Implementations;
 using Services.Interfaces;
 using System;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Imagehub.Core.Controllers
@@ -19,10 +23,12 @@ namespace Imagehub.Core.Controllers
     {
 
         private readonly IAuthService _authService;
+        private readonly IFriendService _friendService;
 
-        public AccountController(IAuthService authService)
+        public AccountController(IAuthService authService, IFriendService friendService)
         {
             _authService = authService;
+            _friendService = friendService;
         }
 
         [HttpPost("register")]
@@ -52,6 +58,7 @@ namespace Imagehub.Core.Controllers
             if (ModelState.IsValid)
             {
                 var result = await _authService.AttemptLoginAsync(loginObject);
+                
                 if (result.Successful)
                 {
                     return Ok(result.UserId);
@@ -67,6 +74,24 @@ namespace Imagehub.Core.Controllers
         {
             var result = await _authService.AttemptLogoutAsync();
             return Ok(result);
+        }
+
+        [HttpGet("all")]
+        public async Task<ActionResult<UserDto>> GetAllFriendableUsers()
+        {
+            var loggedInUserId = _authService.GetLoggedinUserId();
+            if (loggedInUserId == 0)
+            {
+                return new StatusCodeResult(500);
+            }
+
+            var friendIds = _friendService.GetFriendList(loggedInUserId)
+                .Select(f=>f.Id);
+
+            return Ok(await _authService.GetAllUsers()
+                .Where(u=>u.Id != loggedInUserId && !friendIds.Contains(u.Id))
+                .Select(u => new UserDto() {Id = u.Id, Username = u.UserName })
+                .ToListAsync());
         }
 
        
