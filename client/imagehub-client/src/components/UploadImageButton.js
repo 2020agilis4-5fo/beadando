@@ -4,13 +4,17 @@ import SaveIcon from "@material-ui/icons/Save";
 import axios from "axios";
 
 function UploadImage(props) {
+  axios.defaults.withCredentials = true;
   props.setIsUploading(true);
-  axios
-    .post("https://localhost:44380/api/image", {
-      base64EncodedImage: props.image.split(",")[1],
-      imageNameWithExtension: Math.random().toString(36).substring(7) + ".jpg",
-    })
-    .then((res) => {
+  let image = {
+    base64EncodedImage: props.image.split(",")[1],
+    imageNameWithExtension: Math.random().toString(36).substring(7) + ".jpg",
+    ownerId: props.userData.Id
+  };
+  axios("/image/new", {
+  method: "post",
+  data: image,
+}).then((res) => {
       props.setSelected(false);
       props.setSuccessful(true);
       props.setIsUploading(false);
