@@ -2,7 +2,7 @@ import React from "react";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import "./Login.css";
-import Facebook from "./Facebook";
+import LoginForm from "./LoginForm";
 
 export default function Login(props) {
   return (
@@ -15,7 +15,7 @@ export default function Login(props) {
               Üdvözlünk az ImageHub oldalán! A továbblépéshez használd a
               facebookodat!
             </p>
-            <Facebook setIsLoggedIn={props.setIsLoggedIn} setUserData={props.setUserData} />
+            <LoginForm setIsLoggedIn={props.setIsLoggedIn} setUserData={props.setUserData}/>
           </CardContent>
         </div>
       </Card>
