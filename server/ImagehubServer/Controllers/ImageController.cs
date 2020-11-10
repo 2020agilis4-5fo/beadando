@@ -69,14 +69,24 @@ namespace ImagehubServer.Controllers
                 .Select(f => f.Id)
                 .ToListAsync();
 
-            return Ok(new FriendImagesListDto()
+            if (friendIds.Any())
             {
-                UserId = id,
-                FriendImages = await _service.GetElementsAsync()
-                        .Where(img=> friendIds.Contains(img.OwnerId))
+                return Ok(new FriendImagesListDto()
+                {
+                    UserId = id,
+                    FriendImages = await _service.GetElementsAsync()
+                        .Where(img => friendIds.Contains(img.OwnerId))
                         .Select(elem => _mapper.Map<ImageResponseDto>(elem))
                         .ToListAsync()
-            }); 
+                });
+            }
+            else
+            {
+                return Ok(new FriendImagesListDto()
+                {
+                    UserId = id
+                });
+            }          
         }
 
         // GET api/values

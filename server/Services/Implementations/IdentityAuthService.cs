@@ -102,6 +102,11 @@ namespace Services.Implementations
             return loggedInId != 0 && loggedInId == idClaim;
         }
 
+        public IQueryable<ImageHubUser> GetAllUsers()
+        {
+            return _userManager.Users;
+        }
+
         public int GetLoggedinUserId()
         {
             int id;
