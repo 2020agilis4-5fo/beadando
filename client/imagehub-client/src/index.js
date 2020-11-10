@@ -5,7 +5,7 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import axios from 'axios';
 
-axios.defaults.baseURL="https://localhost:44380/api";
+axios.defaults.baseURL="https://beadandoagilis45.azurewebsites.net:5001/api";
 axios.defaults.withCredentials = true;
 
 ReactDOM.render(
