@@ -5,7 +5,7 @@ import ImageSelector from "./ImageSelector";
 import UploadSnackbar from "./UploadSnackbar";
 import { CircularProgress } from "@material-ui/core";
 
-export default function Upload() {
+export default function Upload(props) {
   let [image, setImage] = useState();
   let [selected, setSelected] = useState(false);
   
@@ -23,6 +23,7 @@ export default function Upload() {
         />
         {selected && !isUploading && (
           <UploadImageButton
+            userData={props.userData}
             setSelected={setSelected}
             setImage={setImage}
             image={image}

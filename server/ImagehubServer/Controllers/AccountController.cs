@@ -1,12 +1,15 @@
 ﻿
 
 using Data.Models;
+using Imagehub.Core.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Services.Implementations;
 using Services.Interfaces;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Imagehub.Core.Controllers
@@ -67,6 +70,14 @@ namespace Imagehub.Core.Controllers
         {
             var result = await _authService.AttemptLogoutAsync();
             return Ok(result);
+        }
+
+        [HttpGet("all")]
+        public async Task<ActionResult<UserDto>> GetAllUsers()
+        {
+            return Ok(await _authService.GetAllUsers()
+                .Select(u => new UserDto() {Id = u.Id, Username = u.UserName })
+                .ToListAsync());
         }
 
        

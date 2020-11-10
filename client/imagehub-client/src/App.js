@@ -8,7 +8,7 @@ import { ThemeProvider } from "@material-ui/core/styles";
 
 function App() {
   let  [isLoggedIn, setIsLoggedIn] = useState(false)
-  let  [userData, setUserData] = useState("")
+  let  [userData, setUserData] = useState({Id:"",Username:""})
 
   const theme = createMuiTheme({
     palette: {
@@ -20,7 +20,7 @@ function App() {
     <div className="App">
       <ThemeProvider theme={theme}>
         {!isLoggedIn && <Login setIsLoggedIn={setIsLoggedIn} setUserData={setUserData} />}
-        {isLoggedIn && <MainContent userData={userData} />}
+        {isLoggedIn && userData && <MainContent userData={userData} />}
       </ThemeProvider>
     </div>
   );

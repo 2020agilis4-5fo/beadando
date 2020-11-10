@@ -1,48 +1,37 @@
 import React, { useState, useEffect } from "react";
-import FeedItem from "./FeedItem";
 import "./Feed.css";
 import axios from "axios";
 import { CircularProgress } from "@material-ui/core";
+import ImageFeed from "./ImageFeed";
 
-function GenerateFeedItems(data) {
-  let content = [];
-  for (let i = 0; i < data.length; i++) {
-    content.push(
-      <div key={i} className="box">
-        {
-          <FeedItem
-            name={data[i].name}
-            img={`data:image/png;base64,${data[i].base64EncodedImage}`}
-          />
-        }
-      </div>
-    );
-  }
-  return content;
-}
 
-export default function Feed() {
+export default function Feed(props) {
   let [data, setData] = useState([]);
   let [isLoaded, setIsLoaded] = useState(false);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await axios("https://localhost:44380/api/image");
-
-        setData(result.data);
-        setIsLoaded(true);
+        axios("/image/friends/" + props.userData.Id, {
+          method: "get",
+          withCredentials: true,
+        })
+          .then((response) => {
+            setData(response.data);
+            console.log("Loading completed.");
+            setIsLoaded(true);
+          })
+          .catch((error) => console.log(error));
       } catch (error) {
         console.log(error);
       }
     };
-
+    console.log("Loading friend's images...");
     fetchData();
-  }, []);
+  }, [props]);
 
   return (
-    <div className="container--feed">
-      {isLoaded && GenerateFeedItems(data)}
+    <div>
+      {isLoaded && <ImageFeed data={data.friendImages} />}
       {!isLoaded && <CircularProgress />}
     </div>
   );
