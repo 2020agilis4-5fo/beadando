@@ -14,7 +14,7 @@ function CreateFriendItems(data) {
   let friends = [];
   for (let i = 0; i < data.length; i++) {
     friends.push(
-      <ListItem alignItems="felx-start" key={i} button>
+      <ListItem key={i} button>
         <ListItemAvatar>
           <Avatar />
         </ListItemAvatar>
@@ -46,7 +46,6 @@ export default function Friends(props) {
           .then((response) => {
             console.log("Friend list loaded.");
             setFriends(CreateFriendItems(response.data.friends));
-            console.log(response.data.friends);
           })
           .catch((error) => console.log(error));
       } catch (error) {
