@@ -35,7 +35,7 @@ namespace ImagehubServer
 
             services.AddDbContext<ImageHubDbContext>(options =>
             {
-                options.UseSqlServer("Server=tcp:dbdev45.database.windows.net,1433;Initial Catalog=45dev;Persist Security Info=False;User ID=ddani;Password=Asdasd123;MultipleActiveResultSets=true;Encrypt=True;Trusted_Connection=True"); // TODO
+                options.UseSqlServer("Server=tcp:dbdev45.database.windows.net,1433;Initial Catalog=45dev;Persist Security Info=False;User ID=ddani;Password={your_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"); // TODO
             }, ServiceLifetime.Scoped);
 
             services.Configure<IdentityOptions>(options =>
