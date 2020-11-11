@@ -99,7 +99,7 @@ namespace ImagehubServer
             {
                 c.AddPolicy("img", options => {
                     options
-                        .WithOrigins("https://beadandoagilis45.azurewebsites.net:3000") // TODO
+                        .WithOrigins("https://beadandoagilis45.azurewebsites.net") // TODO
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials();
