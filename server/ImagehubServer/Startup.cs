@@ -99,7 +99,7 @@ namespace ImagehubServer
             {
                 c.AddPolicy(Imagehub.Core.StringConstants.CORS_POLICY_NAME, options => {
                     options
-                        .WithOrigins("https://beadandoagilis45.azurewebsites.net") // TODO
+                        .WithOrigins(Imagehub.Core.StringConstants.SITE) // TODO
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials();
