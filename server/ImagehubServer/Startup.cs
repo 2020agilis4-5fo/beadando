@@ -35,7 +35,7 @@ namespace ImagehubServer
 
             services.AddDbContext<ImageHubDbContext>(options =>
             {
-                options.UseSqlServer("Server=tcp:dbdev45.database.windows.net,1433;Initial Catalog=45dev;Persist Security Info=False;User ID=ddani;Password=Asdasd123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"); // TODO
+                options.UseSqlServer(Imagehub.Core.StringConstants.DB_CONNECTION_STRING); // TODO
             }, ServiceLifetime.Scoped);
 
             services.Configure<IdentityOptions>(options =>
@@ -81,7 +81,7 @@ namespace ImagehubServer
 
                 // User settings.
                 options.User.AllowedUserNameCharacters =
-                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                Imagehub.Core.StringConstants.CHARACTERS_ALL;
                 options.User.RequireUniqueEmail = false;
             });
 
@@ -91,13 +91,13 @@ namespace ImagehubServer
                 options.Cookie.HttpOnly = true;
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
 
-                options.LoginPath = "/Account/Login";
+                options.LoginPath = Imagehub.Core.StringConstants.PATH_LOGIN;
                 options.SlidingExpiration = true;
             });
 
             services.AddCors(c =>
             {
-                c.AddPolicy("img", options => {
+                c.AddPolicy(Imagehub.Core.StringConstants.CORS_POLICY_NAME, options => {
                     options
                         .WithOrigins("https://beadandoagilis45.azurewebsites.net") // TODO
                         .AllowAnyMethod()
@@ -125,7 +125,7 @@ namespace ImagehubServer
             app.UseAuthentication();
             app.UseRouting();
 
-            app.UseCors("img");
+            app.UseCors(Imagehub.Core.StringConstants.CORS_POLICY_NAME);
 
             app.UseAuthorization();
 
