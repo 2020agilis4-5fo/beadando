@@ -11,6 +11,6 @@ namespace Imagehub.Core
         public const string CHARACTERS_ALL = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
         public const string PATH_LOGIN = "/Account/Login";
         public const string CORS_POLICY_NAME = "img";
-        public const string SITE = "https://beadandoagilis45.azurewebsites.net";
+        public const string SITE = "https://agilis45dev.azurewebsites.net";
     }
 }
