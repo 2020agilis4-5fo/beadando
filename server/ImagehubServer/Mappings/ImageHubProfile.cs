@@ -14,12 +14,14 @@ namespace Imagehub.Core.Mappings
                 .ForMember(dest => dest.Id, m => m.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Name, m => m.MapFrom(src => src.FileName))
                 .ForMember(dest => dest.OwnerId, m => m.MapFrom(src => src.OwnerId))
+                .ForMember(dest => dest.Username, m => m.MapFrom(src => src.Owner.UserName))
                 .ReverseMap();
 
             CreateMap<ImagehubImage, ImageUploadDto>()
                 .ForMember(dest => dest.Base64EncodedImage, m => m.MapFrom(src => src.Base64EncodedImage))
                 .ForMember(dest => dest.ImageNameWithExtension, m => m.MapFrom(src => src.FileName))
                 .ForMember(dest => dest.OwnerId, m => m.MapFrom(src => src.OwnerId))
+                .ForMember(dest => dest.Username, m => m.MapFrom(src => src.Owner.UserName))
                 .ReverseMap();
 
             CreateMap<FriendRequest, Friend>()

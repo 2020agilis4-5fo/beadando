@@ -44,7 +44,15 @@ namespace Imagehub.Core.Controllers
                 }
                 else
                 {
-                    return Ok(result.UserId);
+                    var user = await _authService.GetAllUsers()
+                        .Where(u => u.Id == result.UserId)
+                        .SingleOrDefaultAsync();
+
+                    return Ok(new 
+                    { 
+                        Userid = user.Id,
+                        Username = user.UserName
+                    });
                 }
 
             }
@@ -61,7 +69,15 @@ namespace Imagehub.Core.Controllers
                 
                 if (result.Successful)
                 {
-                    return Ok(result.UserId);
+                    var user = await _authService.GetAllUsers()
+                       .Where(u => u.Id == result.UserId)
+                       .SingleOrDefaultAsync();
+
+                    return Ok(new
+                    {
+                        Userid = user.Id,
+                        Username = user.UserName
+                    });
                 }
 
                 return Unauthorized("Incorrect username or password");
@@ -79,6 +95,8 @@ namespace Imagehub.Core.Controllers
         [HttpGet("all")]
         public async Task<ActionResult<UserDto>> GetAllFriendableUsers()
         {
+            // todo: put this to service
+            // todo: filter for friend requests
             var loggedInUserId = _authService.GetLoggedinUserId();
             if (loggedInUserId == 0)
             {
