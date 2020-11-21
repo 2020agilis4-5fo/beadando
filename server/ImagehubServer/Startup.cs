@@ -89,7 +89,6 @@ namespace ImagehubServer
                 // Cookie settings
                 options.Cookie.HttpOnly = true;
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-                options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
 
                 options.LoginPath = "/Account/Login";
                 options.SlidingExpiration = true;
