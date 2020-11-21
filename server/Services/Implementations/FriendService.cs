@@ -65,8 +65,6 @@ namespace Services.Implementations
                 .Include(f => f.Left)
                 .Select(f=>f.Left);
 
-            // todo: is distinct needed?
-
             return rights.Concat(lefts);
         }
 
@@ -88,10 +86,14 @@ namespace Services.Implementations
 
         public async Task<FriendRequest> SendFriendRequest(FriendRequest req)
         {
-            var request = await _friendReqRepo.GetElementAsync(req.Id);
-            if (request != null)
+            var senderId = req.FromId;
+            var friendReqAlreadySent = _friendReqRepo.GetElementsAsync()
+                .Where(r => (r.FromId == senderId && r.ToId == req.ToId) || req.ToId == senderId && r.FromId == req.ToId)
+                .Any();
+
+            if (friendReqAlreadySent)
             {
-                throw new ApplicationException("Friend request already sent");
+                throw new ApplicationException("Friend request already sent or received");
             }
 
             await _friendReqRepo.CreateAsync(req);

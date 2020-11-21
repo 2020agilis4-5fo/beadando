@@ -1,6 +1,7 @@
 ﻿using Data.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Repository.Interfaces;
 using Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -16,14 +17,16 @@ namespace Services.Implementations
         private readonly UserManager<ImageHubUser> _userManager;
         private readonly SignInManager<ImageHubUser> _signInManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IFriendService _friendService;
 
         public IdentityAuthService(UserManager<ImageHubUser> userManager,
             SignInManager<ImageHubUser> signInManager,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor, IFriendService friendService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _httpContextAccessor = httpContextAccessor;
+            _friendService = friendService;
         }
 
         public async Task<AuthResult<int>> AttemptLoginAsync(LoginDto login)
@@ -100,6 +103,28 @@ namespace Services.Implementations
         {
             int loggedInId = this.GetLoggedinUserId();
             return loggedInId != 0 && loggedInId == idClaim;
+        }
+
+        public IQueryable<ImageHubUser> GetAllFriendableUsers()
+        {
+            var loggedInUserId = GetLoggedinUserId();
+            if (loggedInUserId == 0)
+            {
+                throw new ApplicationException("User not found");
+            }
+
+            var friendIds = _friendService.GetFriendList(loggedInUserId)
+                .Select(f => f.Id);
+
+            var usersToWhomRequestIsAlreadySentIds = _friendService.GetUsersWhomFriendRequestSentBy(loggedInUserId)
+                .Union(_friendService.GetUsersWhomFriendRequestSentTo(loggedInUserId))
+                .Select(imgusr => imgusr.Id)
+                .Distinct();
+
+            var nonFriendables = friendIds.Union(usersToWhomRequestIsAlreadySentIds);
+
+            return GetAllUsers()
+                .Where(u => u.Id != loggedInUserId && !nonFriendables.Contains(u.Id));
         }
 
         public IQueryable<ImageHubUser> GetAllUsers()

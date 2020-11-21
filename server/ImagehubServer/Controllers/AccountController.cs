@@ -86,32 +86,17 @@ namespace Imagehub.Core.Controllers
         }
 
         [HttpPost("logout")]
-        public async Task<IActionResult> Logout()
-        {
-            var result = await _authService.AttemptLogoutAsync();
-            return Ok(result);
-        }
+        public async Task<IActionResult> Logout() =>
+            Ok(await _authService.AttemptLogoutAsync());
+
 
         [HttpGet("all")]
-        public async Task<ActionResult<UserDto>> GetAllFriendableUsers()
-        {
-            // todo: put this to service
-            // todo: filter for friend requests
-            var loggedInUserId = _authService.GetLoggedinUserId();
-            if (loggedInUserId == 0)
-            {
-                return new StatusCodeResult(500);
-            }
-
-            var friendIds = _friendService.GetFriendList(loggedInUserId)
-                .Select(f=>f.Id);
-
-            return Ok(await _authService.GetAllUsers()
-                .Where(u=>u.Id != loggedInUserId && !friendIds.Contains(u.Id))
-                .Select(u => new UserDto() {Id = u.Id, Username = u.UserName })
+        public async Task<ActionResult<UserDto>> GetAllFriendableUsers() => 
+            Ok(await _authService.GetAllFriendableUsers()
+                .Select(u => new UserDto() { Id = u.Id, Username = u.UserName })
                 .ToListAsync());
-        }
 
-       
+
+
     }
 }
