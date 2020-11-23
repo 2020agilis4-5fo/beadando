@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Data;
 using Data.Models;
+using Imagehub.Core.Configuration;
 using Imagehub.Core.Mappings;
 using Imagehub.Core.Middleware;
 using Microsoft.AspNetCore.Builder;
@@ -29,12 +30,16 @@ namespace ImagehubServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // binding appsettings
+            var connString = Configuration.GetSection(Constants.CONN);
+            services.Configure<Settings>(connString);
+
             services.AddIdentity<ImageHubUser, UserRole>()
                 .AddEntityFrameworkStores<ImageHubDbContext>();
 
             services.AddDbContext<ImageHubDbContext>(options =>
             {
-                options.UseSqlServer("[CONN]");
+                options.UseSqlServer(connString.Value);
             }, ServiceLifetime.Scoped);
 
             services.Configure<IdentityOptions>(options =>
@@ -56,6 +61,8 @@ namespace ImagehubServer
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IAuthService, IdentityAuthService>();
             services.AddScoped<IFriendService, FriendService>();
+
+
 
             services.AddAuthentication(opts =>
             {
@@ -83,6 +90,8 @@ namespace ImagehubServer
                 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
                 options.User.RequireUniqueEmail = false;
             });
+
+
 
             services.ConfigureApplicationCookie(options =>
             {
