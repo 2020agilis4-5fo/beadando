@@ -32,7 +32,7 @@ namespace ImagehubServer.Controllers
             _friendService = friendService;
             _authService = authService;
         }
-        // GET api/values/
+        // POST api/values/
         [HttpPost("{id}")]
         public async Task<ActionResult<IEnumerable<ImageResponseDto>>> GetImage(int id, [FromBody] UserDto dto)
         {
@@ -76,6 +76,7 @@ namespace ImagehubServer.Controllers
                     UserId = id,
                     FriendImages = await _service.GetElementsAsync()
                         .Where(img => friendIds.Contains(img.OwnerId))
+                        .Include(img => img.Owner)
                         .Select(elem => _mapper.Map<ImageResponseDto>(elem))
                         .ToListAsync()
                 });
@@ -89,7 +90,7 @@ namespace ImagehubServer.Controllers
             }          
         }
 
-        // GET api/values
+        // POST api/values
         [HttpPost]
         public async Task<ActionResult<ImageResponseDto>> GetImages([FromBody] UserDto dto)
         {
@@ -100,6 +101,7 @@ namespace ImagehubServer.Controllers
 
             return Ok(await _service.GetElementsAsync()
                 .Where(img => img.OwnerId == dto.Id)
+                .Include(img=> img.Owner)
                 .Select(elem => _mapper.Map<ImageResponseDto>(elem))
                 .ToListAsync());
         }

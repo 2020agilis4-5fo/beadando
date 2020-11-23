@@ -44,7 +44,15 @@ namespace Imagehub.Core.Controllers
                 }
                 else
                 {
-                    return Ok(result.UserId);
+                    var user = await _authService.GetAllUsers()
+                        .Where(u => u.Id == result.UserId)
+                        .SingleOrDefaultAsync();
+
+                    return Ok(new 
+                    { 
+                        Userid = user.Id,
+                        Username = user.UserName
+                    });
                 }
 
             }
@@ -61,7 +69,15 @@ namespace Imagehub.Core.Controllers
                 
                 if (result.Successful)
                 {
-                    return Ok(result.UserId);
+                    var user = await _authService.GetAllUsers()
+                       .Where(u => u.Id == result.UserId)
+                       .SingleOrDefaultAsync();
+
+                    return Ok(new
+                    {
+                        Userid = user.Id,
+                        Username = user.UserName
+                    });
                 }
 
                 return Unauthorized("Incorrect username or password");
@@ -70,30 +86,17 @@ namespace Imagehub.Core.Controllers
         }
 
         [HttpPost("logout")]
-        public async Task<IActionResult> Logout()
-        {
-            var result = await _authService.AttemptLogoutAsync();
-            return Ok(result);
-        }
+        public async Task<IActionResult> Logout() =>
+            Ok(await _authService.AttemptLogoutAsync());
+
 
         [HttpGet("all")]
-        public async Task<ActionResult<UserDto>> GetAllFriendableUsers()
-        {
-            var loggedInUserId = _authService.GetLoggedinUserId();
-            if (loggedInUserId == 0)
-            {
-                return new StatusCodeResult(500);
-            }
-
-            var friendIds = _friendService.GetFriendList(loggedInUserId)
-                .Select(f=>f.Id);
-
-            return Ok(await _authService.GetAllUsers()
-                .Where(u=>u.Id != loggedInUserId && !friendIds.Contains(u.Id))
-                .Select(u => new UserDto() {Id = u.Id, Username = u.UserName })
+        public async Task<ActionResult<UserDto>> GetAllFriendableUsers() => 
+            Ok(await _authService.GetAllFriendableUsers()
+                .Select(u => new UserDto() { Id = u.Id, Username = u.UserName })
                 .ToListAsync());
-        }
 
-       
+
+
     }
 }

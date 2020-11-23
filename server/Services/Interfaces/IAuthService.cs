@@ -16,6 +16,8 @@ namespace Services.Interfaces
 
         IQueryable<ImageHubUser> GetAllUsers();
 
+        IQueryable<ImageHubUser> GetAllFriendableUsers();
+
         bool CheckIfUserExists(int userId);
 
         int GetLoggedinUserId();
