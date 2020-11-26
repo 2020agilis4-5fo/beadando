@@ -2,8 +2,11 @@
 
 using Data.Models;
 using Imagehub.Core.Dto;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Services.Implementations;
@@ -11,6 +14,7 @@ using Services.Interfaces;
 using System;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Imagehub.Core.Controllers
@@ -59,31 +63,19 @@ namespace Imagehub.Core.Controllers
             return BadRequest(ModelState);
         }
 
-        [HttpPost("login")]
+        [HttpGet("login/{callback}")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginDto loginObject)
+        public IActionResult Login(string callback)
         {
-            if (ModelState.IsValid)
-            {
-                var result = await _authService.AttemptLoginAsync(loginObject);
-                
-                if (result.Successful)
-                {
-                    var user = await _authService.GetAllUsers()
-                       .Where(u => u.Id == result.UserId)
-                       .SingleOrDefaultAsync();
-
-                    return Ok(new
-                    {
-                        Userid = user.Id,
-                        Username = user.UserName
-                    });
-                }
-
-                return Unauthorized("Incorrect username or password");
-            }
-            return BadRequest(ModelState);
+            var redirectUrl = Url.Action(nameof(AccountController.LoginCallback), "Account");
+            return Challenge(new AuthenticationProperties { RedirectUri = redirectUrl }, FacebookDefaults.AuthenticationScheme);
         }
+
+        [HttpGet("callback")]
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginCallback() => 
+             Ok(await _authService.AttemptLoginWithFacebookAsync());
+        
 
         [HttpPost("logout")]
         public async Task<IActionResult> Logout() =>

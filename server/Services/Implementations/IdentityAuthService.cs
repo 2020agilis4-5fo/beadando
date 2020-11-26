@@ -1,4 +1,5 @@
 ﻿using Data.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Repository.Interfaces;
@@ -52,6 +53,78 @@ namespace Services.Implementations
 
         }
 
+        public async Task<AuthResult<int>> AttemptLoginWithFacebookAsync()
+        {
+            var authResult = await _httpContextAccessor.HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
+
+            if (!authResult.Succeeded)
+            {
+                return new AuthResult<int>()
+                {
+                    Successful = false,
+                    Errors = ExtractMessagesFromException(authResult.Failure)
+                };
+            }
+
+            var usernameAndEmail = authResult.Ticket.Principal.FindFirst(ClaimTypes.Name).Value;
+            var user = await _userManager.FindByEmailAsync(usernameAndEmail);
+            if (user == null)
+            {
+                IdentityResult userCreateResult = await AttemptToCreateUser(usernameAndEmail);
+
+                if (!userCreateResult.Succeeded)
+                {
+                    return new AuthResult<int>()
+                    {
+                        Successful = false,
+                        Errors = userCreateResult.Errors.Select(err => err.Description)
+                    };
+                }
+
+                else
+                {
+                    await _httpContextAccessor
+                        .HttpContext
+                        .SignInAsync(IdentityConstants.ApplicationScheme,
+                            new ClaimsPrincipal(authResult.Ticket.Principal.Identity));
+
+
+                    return new AuthResult<int>()
+                    {
+                        Successful = true,
+                        UserId = int.Parse(authResult.Ticket.Principal.FindFirst(ClaimTypes.NameIdentifier).Value)
+                    };
+                }
+
+            }
+
+            return new AuthResult<int>()
+            {
+                Successful = true,
+                UserId = user.Id
+            };
+        }
+
+        private async Task<IdentityResult> AttemptToCreateUser(string usernameAndEmail)
+        {
+            return await _userManager.CreateAsync(new ImageHubUser()
+            {
+                Email = usernameAndEmail,
+                UserName = usernameAndEmail
+            });
+        }
+
+        private IEnumerable<string> ExtractMessagesFromException(Exception ex)
+        {
+            if (ex.InnerException == null)
+            {
+                yield return ex.Message;
+            }
+
+            ExtractMessagesFromException(ex.InnerException);
+        }
+
+   
         public async Task<AuthResult<int>> AttemptLogoutAsync()
         {
             await _signInManager.SignOutAsync();

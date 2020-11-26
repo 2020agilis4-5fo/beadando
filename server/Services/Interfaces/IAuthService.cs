@@ -1,4 +1,5 @@
 ﻿using Data.Models;
+using Microsoft.AspNetCore.Authentication;
 using Services.Implementations;
 using System;
 using System.Linq;
@@ -11,6 +12,8 @@ namespace Services.Interfaces
         Task<AuthResult<int>> AttemptRegisterAsync(LoginDto login);
 
         Task<AuthResult<int>> AttemptLoginAsync(LoginDto login);
+
+        Task<AuthResult<int>> AttemptLoginWithFacebookAsync();
 
         Task<AuthResult<int>> AttemptLogoutAsync();
 
