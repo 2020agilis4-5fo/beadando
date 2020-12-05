@@ -1,5 +1,5 @@
 ﻿
-namespace Imagehub.Core.Dto
+namespace Common.Dto
 {
     public class ImageResponseDto
     {

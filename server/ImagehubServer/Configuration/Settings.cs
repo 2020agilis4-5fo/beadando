@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Imagehub.Core.Configuration
+﻿namespace Imagehub.Core.Configuration
 {
     public class Settings
     {

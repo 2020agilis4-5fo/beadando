@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
-using Data;
+using Common.Dto;
 using Data.Models;
-using Imagehub.Core.Dto;
 
 namespace Imagehub.Core.Mappings
 {

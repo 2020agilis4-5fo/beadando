@@ -1,4 +1,4 @@
-﻿namespace Imagehub.Core.Configuration
+﻿namespace Common
 {
     public class Constants
     {

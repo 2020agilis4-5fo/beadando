@@ -1,14 +1,14 @@
-﻿using Data.Models;
-using Microsoft.AspNetCore.Authentication;
+﻿using Common;
+using Common.Dto;
+using Data.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Repository.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Services.Implementations
@@ -18,16 +18,20 @@ namespace Services.Implementations
         private readonly UserManager<ImageHubUser> _userManager;
         private readonly SignInManager<ImageHubUser> _signInManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IConfiguration _configuration;
+
         private readonly IFriendService _friendService;
 
         public IdentityAuthService(UserManager<ImageHubUser> userManager,
             SignInManager<ImageHubUser> signInManager,
-            IHttpContextAccessor httpContextAccessor, IFriendService friendService)
+            IHttpContextAccessor httpContextAccessor, IFriendService friendService,
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _httpContextAccessor = httpContextAccessor;
             _friendService = friendService;
+            _configuration = configuration;
         }
 
         public async Task<AuthResult<int>> AttemptLoginAsync(LoginDto login)
@@ -47,57 +51,36 @@ namespace Services.Implementations
             return new AuthResult<int>()
             {
                 Successful = identitySigninResult.Succeeded,
-                UserId = userInDb.Id
-               
+                UserId = userInDb.Id              
             };
 
         }
 
-        public async Task<AuthResult<int>> AttemptLoginWithFacebookAsync()
+        public async Task<AuthResult<int>> AttemptLoginWithFacebookAsync(FacebookLoginDto dto)
         {
-            var authResult = await _httpContextAccessor.HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
-
-            if (!authResult.Succeeded)
-            {
-                return new AuthResult<int>()
-                {
-                    Successful = false,
-                    Errors = ExtractMessagesFromException(authResult.Failure)
-                };
-            }
-
-            var usernameAndEmail = authResult.Ticket.Principal.FindFirst(ClaimTypes.Name).Value;
-            var user = await _userManager.FindByEmailAsync(usernameAndEmail);
+            var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null)
             {
-                IdentityResult userCreateResult = await AttemptToCreateUser(usernameAndEmail);
+                user = new ImageHubUser()
+                {
+                    UserName = dto.Email,
+                    Email = dto.Email
+                };
 
-                if (!userCreateResult.Succeeded)
+                var result = await _userManager.CreateAsync(user);
+                if (!result.Succeeded)
                 {
                     return new AuthResult<int>()
                     {
                         Successful = false,
-                        Errors = userCreateResult.Errors.Select(err => err.Description)
+                        Errors = result.Errors.Select(err => err.Description)
                     };
                 }
 
-                else
-                {
-                    await _httpContextAccessor
-                        .HttpContext
-                        .SignInAsync(IdentityConstants.ApplicationScheme,
-                            new ClaimsPrincipal(authResult.Ticket.Principal.Identity));
-
-
-                    return new AuthResult<int>()
-                    {
-                        Successful = true,
-                        UserId = int.Parse(authResult.Ticket.Principal.FindFirst(ClaimTypes.NameIdentifier).Value)
-                    };
-                }
-
+                await _signInManager.SignInAsync(user, isPersistent: true);
             }
 
+            // we add the id of the user role only so that no meaningful info is sent out to the client
             return new AuthResult<int>()
             {
                 Successful = true,
@@ -210,6 +193,13 @@ namespace Services.Implementations
             int id;
             int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out id);
             return id;
+        }
+
+
+        public bool ValidateFbData(FBData dto, FacebookLoginDto claim)
+        {
+            var appId = _configuration[Constants.FB_ID];
+            return dto.Is_valid && dto.App_id == appId && claim.UserId == dto.User_id;
         }
     }
 }

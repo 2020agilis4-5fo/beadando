@@ -7,7 +7,6 @@ using Imagehub.Core.Middleware;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +15,6 @@ using Repository.Implementations;
 using Repository.Interfaces;
 using Services.Implementations;
 using Services.Interfaces;
-using System;
 
 namespace ImagehubServer
 {
@@ -67,13 +65,13 @@ namespace ImagehubServer
 
 
 
-            //services.AddAuthentication(opts =>
-            //{
-            //     identity authentication options
-            //    opts.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
-            //    opts.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
-            //    opts.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-            //});
+            services.AddAuthentication(opts =>
+            {
+                //identity authentication options
+                opts.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
+                opts.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
+                opts.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+            });
 
             // identity authentication config
             //based on: https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-3.1&tabs=visual-studio
@@ -98,28 +96,28 @@ namespace ImagehubServer
                 .AddCookie(opts =>
                 {
                     opts.LoginPath = "/api/account/login";
-                })
-                .AddFacebook(fb =>
-                {
-                    fb.AppId = appId;
-                    fb.AppSecret = secret;
-                    fb.CorrelationCookie.SameSite = SameSiteMode.Lax;
-                    fb.SaveTokens = true;
-                    fb.Scope.Add("user_friends");
                 });
+                //.AddFacebook(fb =>
+                //{
+                //    fb.AppId = appId;
+                //    fb.AppSecret = secret;
+                //    fb.CorrelationCookie.SameSite = SameSiteMode.Lax;
+                //    fb.SaveTokens = true;
+                //    fb.Scope.Add("user_friends");
+                //});
 
 
-            services.ConfigureApplicationCookie(options =>
-            {
-                //options.AccessDeniedPath =
-                options.Cookie.Name = "FB_COOKIE";
-                options.Cookie.HttpOnly = true;
-                options.Cookie.SameSite = SameSiteMode.Lax;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(720);
-                options.LoginPath = new PathString("/api/account/login");
-                options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
-                options.SlidingExpiration = true;
-            });
+            //services.ConfigureApplicationCookie(options =>
+            //{
+            //    //options.AccessDeniedPath =
+            //    options.Cookie.Name = "FB_COOKIE";
+            //    options.Cookie.HttpOnly = true;
+            //    options.Cookie.SameSite = SameSiteMode.Lax;
+            //    options.ExpireTimeSpan = TimeSpan.FromMinutes(720);
+            //    options.LoginPath = new PathString("/api/account/login");
+            //    options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
+            //    options.SlidingExpiration = true;
+            //});
 
 
 
