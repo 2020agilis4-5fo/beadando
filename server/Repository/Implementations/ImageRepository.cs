@@ -1,12 +1,5 @@
 ﻿using Data;
 using Data.Models;
-using Microsoft.EntityFrameworkCore;
-using Repository.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Repository.Implementations
 {

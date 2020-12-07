@@ -1,13 +1,14 @@
-﻿using Data.Models;
+﻿using Common;
+using Common.Dto;
+using Data.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Repository.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Services.Implementations
@@ -17,16 +18,20 @@ namespace Services.Implementations
         private readonly UserManager<ImageHubUser> _userManager;
         private readonly SignInManager<ImageHubUser> _signInManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IConfiguration _configuration;
+
         private readonly IFriendService _friendService;
 
         public IdentityAuthService(UserManager<ImageHubUser> userManager,
             SignInManager<ImageHubUser> signInManager,
-            IHttpContextAccessor httpContextAccessor, IFriendService friendService)
+            IHttpContextAccessor httpContextAccessor, IFriendService friendService,
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _httpContextAccessor = httpContextAccessor;
             _friendService = friendService;
+            _configuration = configuration;
         }
 
         public async Task<AuthResult<int>> AttemptLoginAsync(LoginDto login)
@@ -46,12 +51,63 @@ namespace Services.Implementations
             return new AuthResult<int>()
             {
                 Successful = identitySigninResult.Succeeded,
-                UserId = userInDb.Id
-               
+                UserId = userInDb.Id              
             };
 
         }
 
+        public async Task<AuthResult<int>> AttemptLoginWithFacebookAsync(FacebookLoginDto dto)
+        {
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+            if (user == null)
+            {
+                user = new ImageHubUser()
+                {
+                    UserName = dto.Email,
+                    Email = dto.Email
+                };
+
+                var result = await _userManager.CreateAsync(user);
+                if (!result.Succeeded)
+                {
+                    return new AuthResult<int>()
+                    {
+                        Successful = false,
+                        Errors = result.Errors.Select(err => err.Description)
+                    };
+                }
+
+                await _signInManager.SignInAsync(user, isPersistent: true);
+            }
+
+            // we add the id of the user role only so that no meaningful info is sent out to the client
+            return new AuthResult<int>()
+            {
+                Successful = true,
+                UserId = user.Id
+            };
+        }
+
+        private async Task<IdentityResult> AttemptToCreateUser(string usernameAndEmail)
+        {
+            return await _userManager.CreateAsync(new ImageHubUser()
+            {
+                Email = usernameAndEmail,
+                UserName = usernameAndEmail
+            });
+        }
+
+        private IEnumerable<string> ExtractMessagesFromException(Exception ex)
+        {
+            if (ex.InnerException == null)
+            {
+                yield return ex.Message;
+            }
+
+            ExtractMessagesFromException(ex.InnerException);
+        }
+
+   
         public async Task<AuthResult<int>> AttemptLogoutAsync()
         {
             await _signInManager.SignOutAsync();
@@ -137,6 +193,13 @@ namespace Services.Implementations
             int id;
             int.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out id);
             return id;
+        }
+
+
+        public bool ValidateFbData(FBData dto, FacebookLoginDto claim)
+        {
+            var appId = _configuration[Constants.FB_ID];
+            return dto.Is_valid && dto.App_id == appId && claim.UserId == dto.User_id;
         }
     }
 }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace Imagehub.Core.Dto
+namespace Common.Dto
 {
     public class RequestReceivedDto
     {

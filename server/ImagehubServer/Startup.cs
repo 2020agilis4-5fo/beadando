@@ -4,6 +4,7 @@ using Data.Models;
 using Imagehub.Core.Configuration;
 using Imagehub.Core.Mappings;
 using Imagehub.Core.Middleware;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -14,7 +15,6 @@ using Repository.Implementations;
 using Repository.Interfaces;
 using Services.Implementations;
 using Services.Interfaces;
-using System;
 
 namespace ImagehubServer
 {
@@ -31,15 +31,16 @@ namespace ImagehubServer
         public void ConfigureServices(IServiceCollection services)
         {
             // binding appsettings
-            var connString = Configuration.GetSection(Constants.CONN);
-            services.Configure<Settings>(connString);
+            var connString = Configuration[Constants.CONN];
+            var appId = Configuration[Constants.FB_ID];
+            var secret = Configuration[Constants.FB_SECRET];
 
             services.AddIdentity<ImageHubUser, UserRole>()
                 .AddEntityFrameworkStores<ImageHubDbContext>();
 
             services.AddDbContext<ImageHubDbContext>(options =>
             {
-                options.UseSqlServer(connString.Value);
+                options.UseSqlServer(connString);
             }, ServiceLifetime.Scoped);
 
             services.Configure<IdentityOptions>(options =>
@@ -66,7 +67,7 @@ namespace ImagehubServer
 
             services.AddAuthentication(opts =>
             {
-                // identity authentication options
+                //identity authentication options
                 opts.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
                 opts.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
                 opts.DefaultSignInScheme = IdentityConstants.ExternalScheme;
@@ -74,41 +75,57 @@ namespace ImagehubServer
 
             // identity authentication config
             //based on: https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-3.1&tabs=visual-studio
-            services.Configure<IdentityOptions>(options =>
-            {
-                // Password settings.
-                options.Password.RequireUppercase = false;
-                options.Password.RequireNonAlphanumeric = false;
+            //services.Configure<IdentityOptions>(options =>
+            //{
+            //     Password settings.
+            //    options.Password.RequireUppercase = false;
+            //    options.Password.RequireNonAlphanumeric = false;
 
-                // Lockout settings.
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-                options.Lockout.MaxFailedAccessAttempts = 5;
-                options.Lockout.AllowedForNewUsers = true;
+            //     Lockout settings.
+            //    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+            //    options.Lockout.MaxFailedAccessAttempts = 5;
+            //    options.Lockout.AllowedForNewUsers = true;
 
-                // User settings.
-                options.User.AllowedUserNameCharacters =
-                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-                options.User.RequireUniqueEmail = false;
-            });
+            //     User settings.
+            //    options.User.AllowedUserNameCharacters =
+            //    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+            //    options.User.RequireUniqueEmail = false;
+            //});
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(opts =>
+                {
+                    opts.LoginPath = "/api/account/login";
+                });
+                //.AddFacebook(fb =>
+                //{
+                //    fb.AppId = appId;
+                //    fb.AppSecret = secret;
+                //    fb.CorrelationCookie.SameSite = SameSiteMode.Lax;
+                //    fb.SaveTokens = true;
+                //    fb.Scope.Add("user_friends");
+                //});
 
 
+            //services.ConfigureApplicationCookie(options =>
+            //{
+            //    //options.AccessDeniedPath =
+            //    options.Cookie.Name = "FB_COOKIE";
+            //    options.Cookie.HttpOnly = true;
+            //    options.Cookie.SameSite = SameSiteMode.Lax;
+            //    options.ExpireTimeSpan = TimeSpan.FromMinutes(720);
+            //    options.LoginPath = new PathString("/api/account/login");
+            //    options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
+            //    options.SlidingExpiration = true;
+            //});
 
-            services.ConfigureApplicationCookie(options =>
-            {
-                // Cookie settings
-                options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-                options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
 
-                options.LoginPath = "/Account/Login";
-                options.SlidingExpiration = true;
-            });
 
             services.AddCors(c =>
             {
                 c.AddPolicy("img", options => {
                     options
-                        .WithOrigins("localhost")
+                        .WithOrigins("https://localhost:3000")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials();

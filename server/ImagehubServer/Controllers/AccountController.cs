@@ -1,17 +1,17 @@
-﻿
-
-using Data.Models;
-using Imagehub.Core.Dto;
+﻿using Flurl.Http;
+using Flurl;
+using Imagehub.Core.Configuration;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Services.Implementations;
+using Microsoft.Extensions.Configuration;
 using Services.Interfaces;
-using System;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
+using Common.Dto;
 
 namespace Imagehub.Core.Controllers
 {
@@ -24,11 +24,13 @@ namespace Imagehub.Core.Controllers
 
         private readonly IAuthService _authService;
         private readonly IFriendService _friendService;
+        private readonly IConfiguration _configuration;
 
-        public AccountController(IAuthService authService, IFriendService friendService)
+        public AccountController(IAuthService authService, IFriendService friendService, IConfiguration configuration)
         {
             _authService = authService;
             _friendService = friendService;
+            _configuration = configuration;
         }
 
         [HttpPost("register")]
@@ -59,31 +61,52 @@ namespace Imagehub.Core.Controllers
             return BadRequest(ModelState);
         }
 
-        [HttpPost("login")]
+        [HttpGet("login/{callback}")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginDto loginObject)
+        public IActionResult Login(string callback)
         {
-            if (ModelState.IsValid)
-            {
-                var result = await _authService.AttemptLoginAsync(loginObject);
-                
-                if (result.Successful)
-                {
-                    var user = await _authService.GetAllUsers()
-                       .Where(u => u.Id == result.UserId)
-                       .SingleOrDefaultAsync();
-
-                    return Ok(new
-                    {
-                        Userid = user.Id,
-                        Username = user.UserName
-                    });
-                }
-
-                return Unauthorized("Incorrect username or password");
-            }
-            return BadRequest(ModelState);
+            var redirectUrl = Url.Action(nameof(AccountController.LoginCallback), "Account");
+            return Challenge(new AuthenticationProperties { RedirectUri = redirectUrl }, FacebookDefaults.AuthenticationScheme);
         }
+
+        [HttpPost("callback")]
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginCallback(FacebookLoginDto dto)
+        {
+            var tokenExchangeResponse = await "https://graph.facebook.com/oauth/access_token"
+                .SetQueryParams(new
+                {
+                    client_id = _configuration[Constants.FB_ID],
+                    client_secret = _configuration[Constants.FB_SECRET],
+                    grant_type = "client_credentials"
+                })
+                .GetJsonAsync<FbAccessToken>();
+
+
+            var response = await "https://graph.facebook.com/debug_token"
+                .SetQueryParams(new
+                {
+                    input_token = dto.AccessToken,
+                    access_token = tokenExchangeResponse.Access_Token
+                })
+                .GetJsonAsync();
+
+            var fbData = new FBData()
+            {
+                App_id = response.data.app_id,
+                Is_valid = response.data.is_valid,
+                User_id = response.data.user_id
+            };
+
+            if (_authService.ValidateFbData(fbData, dto))
+            {
+                return Ok(await _authService.AttemptLoginWithFacebookAsync(dto));
+            }
+
+            return Unauthorized(); 
+        }
+             
+        
 
         [HttpPost("logout")]
         public async Task<IActionResult> Logout() =>

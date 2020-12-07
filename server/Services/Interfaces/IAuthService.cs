@@ -1,6 +1,6 @@
-﻿using Data.Models;
+﻿using Common.Dto;
+using Data.Models;
 using Services.Implementations;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,6 +11,10 @@ namespace Services.Interfaces
         Task<AuthResult<int>> AttemptRegisterAsync(LoginDto login);
 
         Task<AuthResult<int>> AttemptLoginAsync(LoginDto login);
+
+        Task<AuthResult<int>> AttemptLoginWithFacebookAsync(FacebookLoginDto dto);
+
+        bool ValidateFbData(FBData dto, FacebookLoginDto claims);
 
         Task<AuthResult<int>> AttemptLogoutAsync();
 
