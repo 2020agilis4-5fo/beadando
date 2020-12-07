@@ -9,7 +9,8 @@ function UploadImage(props) {
   let image = {
     base64EncodedImage: props.image.split(",")[1],
     imageNameWithExtension: Math.random().toString(36).substring(7) + ".jpg",
-    ownerId: props.userData.Id
+    ownerId: props.userData.Id,
+    Username: props.userData.Username
   };
   axios("/image/new", {
   method: "post",
