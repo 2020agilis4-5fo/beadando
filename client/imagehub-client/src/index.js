@@ -9,9 +9,9 @@ axios.defaults.baseURL="https://localhost:44380/api";
 axios.defaults.withCredentials = true;
 
 ReactDOM.render(
-  <React.StrictMode>
+  <>
     <App />
-  </React.StrictMode>,
+  </>,
   document.getElementById('root')
 );
 
