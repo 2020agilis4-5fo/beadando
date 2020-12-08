@@ -11,7 +11,7 @@ export default function ImageFeed(props) {
       <div key={i} className="box">
         {
           <FeedItem
-            name={data[i].name}
+            name={data[i].username}
             img={`data:image/png;base64,${data[i].base64EncodedImage}`}
           />
         }

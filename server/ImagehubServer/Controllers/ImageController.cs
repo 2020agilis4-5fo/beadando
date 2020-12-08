@@ -114,6 +114,7 @@ namespace ImagehubServer.Controllers
             }
 
             var imageEntity = _mapper.Map<ImagehubImage>(dto);
+            imageEntity.Owner = null;
 
             await _service.CreateAsync(imageEntity);
 

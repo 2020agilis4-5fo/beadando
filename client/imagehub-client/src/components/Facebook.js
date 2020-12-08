@@ -21,9 +21,9 @@ import { Contacts } from '@material-ui/icons';
 export default function Facebook(props) {
   const responseFacebook = (response) => {
     if (response.email) {
-      console.log(response)
+      //console.log(response)
       let uname = response.email
-      axios('https://localhost:44380/api/account/callback', {
+      axios('/account/callback', {
         method: 'post',
         data: {
           email: response.email,
@@ -34,11 +34,11 @@ export default function Facebook(props) {
       })
         .then((response) => {
           console.log(response);
-          props.setIsLoggedIn(true);
           props.setUserData({
             Username: uname,
             Id: response.data.userId
           });
+          props.setIsLoggedIn(true);
           
         })
     }
@@ -49,6 +49,7 @@ export default function Facebook(props) {
       autoLoad={false}
       fields="name,email"
       callback={responseFacebook}
+      disableMobileRedirect={true}
     />
   );
 }

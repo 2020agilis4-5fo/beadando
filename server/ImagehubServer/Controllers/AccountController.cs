@@ -61,13 +61,6 @@ namespace Imagehub.Core.Controllers
             return BadRequest(ModelState);
         }
 
-        [HttpGet("login/{callback}")]
-        [AllowAnonymous]
-        public IActionResult Login(string callback)
-        {
-            var redirectUrl = Url.Action(nameof(AccountController.LoginCallback), "Account");
-            return Challenge(new AuthenticationProperties { RedirectUri = redirectUrl }, FacebookDefaults.AuthenticationScheme);
-        }
 
         [HttpPost("callback")]
         [AllowAnonymous]
