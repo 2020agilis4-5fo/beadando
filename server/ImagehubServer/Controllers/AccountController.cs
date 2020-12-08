@@ -17,7 +17,7 @@ namespace Imagehub.Core.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors(StringConstants.CORS_POLICY_NAME)]
+    [EnableCors("img")]
     [Authorize]
     public class AccountController: ControllerBase
     {
