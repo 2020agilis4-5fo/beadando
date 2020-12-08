@@ -49,6 +49,7 @@ export default function Facebook(props) {
       autoLoad={false}
       fields="name,email"
       callback={responseFacebook}
+      disableMobileRedirect={true}
     />
   );
 }
