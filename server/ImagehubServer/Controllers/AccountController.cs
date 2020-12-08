@@ -1,17 +1,17 @@
-﻿
-
-using Data.Models;
-using Imagehub.Core.Dto;
+﻿using Flurl.Http;
+using Flurl;
+using Imagehub.Core.Configuration;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Services.Implementations;
+using Microsoft.Extensions.Configuration;
 using Services.Interfaces;
-using System;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
+using Common.Dto;
 
 namespace Imagehub.Core.Controllers
 {
@@ -24,11 +24,13 @@ namespace Imagehub.Core.Controllers
 
         private readonly IAuthService _authService;
         private readonly IFriendService _friendService;
+        private readonly IConfiguration _configuration;
 
-        public AccountController(IAuthService authService, IFriendService friendService)
+        public AccountController(IAuthService authService, IFriendService friendService, IConfiguration configuration)
         {
             _authService = authService;
             _friendService = friendService;
+            _configuration = configuration;
         }
 
         [HttpPost("register")]
@@ -44,56 +46,73 @@ namespace Imagehub.Core.Controllers
                 }
                 else
                 {
-                    return Ok(result.UserId);
+                    var user = await _authService.GetAllUsers()
+                        .Where(u => u.Id == result.UserId)
+                        .SingleOrDefaultAsync();
+
+                    return Ok(new 
+                    { 
+                        Userid = user.Id,
+                        Username = user.UserName
+                    });
                 }
 
             }
             return BadRequest(ModelState);
         }
 
-        [HttpPost("login")]
+
+        [HttpPost("callback")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginDto loginObject)
+        public async Task<IActionResult> LoginCallback(FacebookLoginDto dto)
         {
-            if (ModelState.IsValid)
-            {
-                var result = await _authService.AttemptLoginAsync(loginObject);
-                
-                if (result.Successful)
+            var tokenExchangeResponse = await "https://graph.facebook.com/oauth/access_token"
+                .SetQueryParams(new
                 {
-                    return Ok(result.UserId);
-                }
+                    client_id = _configuration[Constants.FB_ID],
+                    client_secret = _configuration[Constants.FB_SECRET],
+                    grant_type = "client_credentials"
+                })
+                .GetJsonAsync<FbAccessToken>();
 
-                return Unauthorized("Incorrect username or password");
+
+            var response = await "https://graph.facebook.com/debug_token"
+                .SetQueryParams(new
+                {
+                    input_token = dto.AccessToken,
+                    access_token = tokenExchangeResponse.Access_Token
+                })
+                .GetJsonAsync();
+
+            var fbData = new FBData()
+            {
+                App_id = response.data.app_id,
+                Is_valid = response.data.is_valid,
+                User_id = response.data.user_id
+            };
+
+            if (_authService.ValidateFbData(fbData, dto))
+            {
+                return Ok(await _authService.AttemptLoginWithFacebookAsync(dto));
             }
-            return BadRequest(ModelState);
+
+            return Unauthorized(); 
         }
+             
+        
 
         [HttpPost("logout")]
-        public async Task<IActionResult> Logout()
-        {
-            var result = await _authService.AttemptLogoutAsync();
-            return Ok(result);
-        }
+        public async Task<IActionResult> Logout() =>
+            Ok(await _authService.AttemptLogoutAsync());
+
 
         [HttpGet("all")]
-        public async Task<ActionResult<UserDto>> GetAllFriendableUsers()
-        {
-            var loggedInUserId = _authService.GetLoggedinUserId();
-            if (loggedInUserId == 0)
-            {
-                return new StatusCodeResult(500);
-            }
-
-            var friendIds = _friendService.GetFriendList(loggedInUserId)
-                .Select(f=>f.Id);
-
-            return Ok(await _authService.GetAllUsers()
-                .Where(u=>u.Id != loggedInUserId && !friendIds.Contains(u.Id))
-                .Select(u => new UserDto() {Id = u.Id, Username = u.UserName })
+        public async Task<ActionResult<UserDto>> GetAllFriendableUsers() => 
+            Ok(await _authService.GetAllFriendableUsers()
+                .Select(u => new UserDto() { Id = u.Id, Username = u.UserName })
                 .ToListAsync());
-        }
 
-       
+
+
     }
 }

@@ -1,5 +1,5 @@
 ﻿
-namespace Imagehub.Core.Dto
+namespace Common.Dto
 {
     public class ImageResponseDto
     {
@@ -7,5 +7,6 @@ namespace Imagehub.Core.Dto
         public string Base64EncodedImage { get; set; }
         public string Name { get; set; }
         public int OwnerId { get; set; }
+        public string Username { get; set; }
     }
 }

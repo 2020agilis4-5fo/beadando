@@ -9,9 +9,9 @@ axios.defaults.baseURL="https://beadandoagilis45.azurewebsites.net/api";
 axios.defaults.withCredentials = true;
 
 ReactDOM.render(
-  <React.StrictMode>
+  <>
     <App />
-  </React.StrictMode>,
+  </>,
   document.getElementById('root')
 );
 

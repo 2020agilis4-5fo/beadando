@@ -4,10 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Repository.Interfaces;
 using Services.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Services.Implementations
@@ -65,8 +62,6 @@ namespace Services.Implementations
                 .Include(f => f.Left)
                 .Select(f=>f.Left);
 
-            // todo: is distinct needed?
-
             return rights.Concat(lefts);
         }
 
@@ -88,10 +83,14 @@ namespace Services.Implementations
 
         public async Task<FriendRequest> SendFriendRequest(FriendRequest req)
         {
-            var request = await _friendReqRepo.GetElementAsync(req.Id);
-            if (request != null)
+            var senderId = req.FromId;
+            var friendReqAlreadySent = _friendReqRepo.GetElementsAsync()
+                .Where(r => (r.FromId == senderId && r.ToId == req.ToId) || req.ToId == senderId && r.FromId == req.ToId)
+                .Any();
+
+            if (friendReqAlreadySent)
             {
-                throw new ApplicationException("Friend request already sent");
+                throw new ApplicationException("Friend request already sent or received");
             }
 
             await _friendReqRepo.CreateAsync(req);

@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data;
+using Common.Dto;
 using Data.Models;
-using Imagehub.Core.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +30,7 @@ namespace ImagehubServer.Controllers
             _friendService = friendService;
             _authService = authService;
         }
-        // GET api/values/
+        // POST api/values/
         [HttpPost("{id}")]
         public async Task<ActionResult<IEnumerable<ImageResponseDto>>> GetImage(int id, [FromBody] UserDto dto)
         {
@@ -76,6 +74,7 @@ namespace ImagehubServer.Controllers
                     UserId = id,
                     FriendImages = await _service.GetElementsAsync()
                         .Where(img => friendIds.Contains(img.OwnerId))
+                        .Include(img => img.Owner)
                         .Select(elem => _mapper.Map<ImageResponseDto>(elem))
                         .ToListAsync()
                 });
@@ -89,7 +88,7 @@ namespace ImagehubServer.Controllers
             }          
         }
 
-        // GET api/values
+        // POST api/values
         [HttpPost]
         public async Task<ActionResult<ImageResponseDto>> GetImages([FromBody] UserDto dto)
         {
@@ -100,6 +99,7 @@ namespace ImagehubServer.Controllers
 
             return Ok(await _service.GetElementsAsync()
                 .Where(img => img.OwnerId == dto.Id)
+                .Include(img=> img.Owner)
                 .Select(elem => _mapper.Map<ImageResponseDto>(elem))
                 .ToListAsync());
         }
@@ -114,6 +114,7 @@ namespace ImagehubServer.Controllers
             }
 
             var imageEntity = _mapper.Map<ImagehubImage>(dto);
+            imageEntity.Owner = null;
 
             await _service.CreateAsync(imageEntity);
 

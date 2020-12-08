@@ -27,6 +27,7 @@ export default function Profile(props) {
     }
   };
   console.log("Fetching own photos...")
+  //console.log(props.userData)
   fetchData();
   }, [props]);
 

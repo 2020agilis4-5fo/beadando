@@ -1,6 +1,7 @@
-import React from "react";
-import FacebookLogin from "react-facebook-login";
-import axios from "axios";
+import React from 'react';
+import FacebookLogin from 'react-facebook-login';
+import axios from 'axios';
+import { Contacts } from '@material-ui/icons';
 
 /*function login(username, password, props) {
   api
@@ -18,22 +19,28 @@ import axios from "axios";
 }*/
 
 export default function Facebook(props) {
-  let responseFacebook = (response) => {
+  const responseFacebook = (response) => {
     if (response.email) {
-      let username = response.email.split("@")[0];
-      let password = "SH27asdh@sdj";
-      axios("/account/login", {
-        method: "post",
-        data: { Username: "bolcskey.tamas", Password: password },
-        withCredentials: true,
+      //console.log(response)
+      let uname = response.email
+      axios('/account/callback', {
+        method: 'post',
+        data: {
+          email: response.email,
+          accessToken: response.accessToken,
+          userId: response.id
+        },
+        withCredentials: true
       })
         .then((response) => {
+          console.log(response);
           props.setUserData({
-            Username: username,
-            Id: response.data,
+            Username: uname,
+            Id: response.data.userId
           });
           props.setIsLoggedIn(true);
-        });
+          
+        })
     }
   };
   return (
@@ -42,6 +49,7 @@ export default function Facebook(props) {
       autoLoad={false}
       fields="name,email"
       callback={responseFacebook}
+      disableMobileRedirect={true}
     />
   );
 }
