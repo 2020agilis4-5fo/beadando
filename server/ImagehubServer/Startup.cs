@@ -124,9 +124,9 @@ namespace ImagehubServer
 
             services.AddCors(c =>
             {
-                c.AddPolicy(Imagehub.Core.StringConstants.CORS_POLICY_NAME, options => {
+                c.AddPolicy("img", options => {
                     options
-                        .WithOrigins(Imagehub.Core.StringConstants.SITE) // TODO
+                        .WithOrigins(Constants.CLIENT_SITE)
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials();
@@ -152,7 +152,7 @@ namespace ImagehubServer
             app.UseAuthentication();
             app.UseRouting();
 
-            app.UseCors(Imagehub.Core.StringConstants.CORS_POLICY_NAME);
+            app.UseCors("img");
 
             app.UseAuthorization();
 
