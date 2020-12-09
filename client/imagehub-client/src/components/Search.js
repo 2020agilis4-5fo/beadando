@@ -13,8 +13,7 @@ export default function Search(props) {
     const fetchData = async () => {
       try {
         axios("/account/all", {
-          method: "get",
-          withCredentials: true,
+          method: "get"
         })
           .then((response) => {
             console.log("Users got.");

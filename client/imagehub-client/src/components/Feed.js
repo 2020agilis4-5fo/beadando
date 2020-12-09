@@ -12,8 +12,7 @@ export default function Feed(props) {
     const fetchData = async () => {
       try {
         axios("/image/friends/" + props.userData.Id, {
-          method: "get",
-          withCredentials: true,
+          method: "get"
         })
           .then((response) => {
             setData(response.data);

@@ -69,8 +69,8 @@ namespace Imagehub.Core.Controllers
             var tokenExchangeResponse = await "https://graph.facebook.com/oauth/access_token"
                 .SetQueryParams(new
                 {
-                    client_id = _configuration[Constants.FB_ID],
-                    client_secret = _configuration[Constants.FB_SECRET],
+                    client_id = _configuration[Consts.FB_ID],
+                    client_secret = _configuration[Consts.FB_SECRET],
                     grant_type = "client_credentials"
                 })
                 .GetJsonAsync<FbAccessToken>();

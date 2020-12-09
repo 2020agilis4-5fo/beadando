@@ -40,8 +40,7 @@ export default function Friends(props) {
     const fetchFriendRequests = async () => {
       try {
         axios("/friend/" + props.userData.Id, {
-          method: "get",
-          withCredentials: true,
+          method: "get"
         })
           .then((response) => {
             console.log("Friend list loaded.");
