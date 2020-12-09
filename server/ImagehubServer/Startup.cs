@@ -98,6 +98,7 @@ namespace ImagehubServer
                 .AddCookie(opts =>
                 {
                     opts.LoginPath = "/api/account/login";
+                    opts.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
                 });
                 //.AddFacebook(fb =>
                 //{
