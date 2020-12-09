@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -132,6 +133,8 @@ namespace ImagehubServer
                         .AllowCredentials();
                 });
             });
+
+            services.AddSingleton(cog => new ComputerVisionClient(new ApiKeyServiceClientCredentials(Constants.COG_KEY)) { Endpoint = Constants.COG_SITE });
 
         }
 

@@ -1,12 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Common.Dto;
 using Data.Models;
+using Imagehub.Core.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
+using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using Microsoft.EntityFrameworkCore;
 using Services.Interfaces;
 
@@ -22,13 +27,15 @@ namespace ImagehubServer.Controllers
         private readonly IImageService _service;
         private readonly IFriendService _friendService;
         private readonly IAuthService _authService;
+        private readonly ComputerVisionClient cognitiveClient;
 
-        public ImageController(IMapper mapper, IImageService service, IFriendService friendService, IAuthService authService)
+        public ImageController(IMapper mapper, IImageService service, IFriendService friendService, IAuthService authService, ComputerVisionClient cognitiveClient)
         {
             _mapper = mapper;
             _service = service;
             _friendService = friendService;
             _authService = authService;
+            this.cognitiveClient = cognitiveClient;
         }
         // POST api/values/
         [HttpPost("{id}")]
@@ -115,6 +122,16 @@ namespace ImagehubServer.Controllers
 
             var imageEntity = _mapper.Map<ImagehubImage>(dto);
             imageEntity.Owner = null;
+
+            byte[] bytes = Convert.FromBase64String(imageEntity.Base64EncodedImage);
+            using(var stream = new MemoryStream(bytes))
+            {
+                TagResult analysis = await cognitiveClient.TagImageInStreamAsync(stream);
+                if (analysis.Tags.Where(x => x.Name.Contains(Constants.BANNED_TAG) && x.Confidence >= Constants.BANNED_MINIMUM_CONFIDENCE).Any())
+                {
+                    return Unauthorized("This image was blocked for containing undesired characteristics.");
+                }
+            }
 
             await _service.CreateAsync(imageEntity);
 
