@@ -36,5 +36,15 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "proxy":{
+   "/api/*":{
+   "target":"https://beadandoagilis45.azurewebsites.net/",
+   "secure":false,
+      "headers": {
+        "host": "https://beadandoagilis45.azurewebsites.net/"
+      },
+      "cookieDomainRewrite": ""
+	}
   }
 }
