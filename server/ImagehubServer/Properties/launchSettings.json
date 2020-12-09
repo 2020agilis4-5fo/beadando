@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:51028",
+      "applicationUrl": "https://beadandoagilis45.azurewebsites.net",
       "sslPort": 44380
     }
   },
